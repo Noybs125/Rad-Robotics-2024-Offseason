@@ -49,10 +49,10 @@ public class Swerve extends SubsystemBase {
     swerveOdometry = new SwerveDriveOdometry(Constants.kSwerve.KINEMATICS, getYaw(), getPositions());
      
     AutoBuilder.configureHolonomic(
-            getSuppPose(), // Robot pose supplier
-            resetConPose(getPose()), // Method to reset odometry (will be called if your auto has a starting pose)
-            getRelSpeeds(), // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            setRelSpeeds(getStates()), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getRelSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+            this::setRelSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                     new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
                     new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
@@ -150,32 +150,21 @@ public class Swerve extends SubsystemBase {
   public Pose2d getPose() {
     return swerveOdometry.getPoseMeters();
   }
-  public Supplier<Pose2d> getSuppPose(){
-    Supplier<Pose2d> currSuppPose = () -> swerveOdometry.getPoseMeters();
-    return currSuppPose;
-  }
 
   public void resetOdometry(Pose2d pose) {
     swerveOdometry.resetPosition(getYaw(), getPositions(), pose);
   }
-  public Consumer<Pose2d> resetConPose(Pose2d pose){
-    Consumer<Pose2d> resetCon = t -> {resetOdometry(pose);};
-    return resetCon;
-  }
 
-  public Supplier<ChassisSpeeds> getRelSpeeds() {
-    Supplier<ChassisSpeeds> relSpeed = () -> Constants.kSwerve.KINEMATICS.toChassisSpeeds(getStates());
-    return relSpeed;
-  }
-
-  public ChassisSpeeds getRelSpeedsNonSuplier() {
+  public ChassisSpeeds getRelSpeeds() {
     ChassisSpeeds relSpeed = Constants.kSwerve.KINEMATICS.toChassisSpeeds(getStates());
     return relSpeed;
   }
-  
-  public Consumer<ChassisSpeeds> setRelSpeeds(SwerveModuleState[] states) {
-    Consumer<ChassisSpeeds> setRelSpeed = n -> {setModuleStates(states);};
-    return setRelSpeed;
+
+  public void setRelSpeeds(ChassisSpeeds speeds){
+    speeds.omegaRadiansPerSecond = -speeds.omegaRadiansPerSecond;
+    speeds = ChassisSpeeds.discretize(speeds, 0.02);
+    SwerveModuleState[] states = Constants.kSwerve.KINEMATICS.toSwerveModuleStates(speeds);
+    setModuleStates(states);
   }
   
   @Override 

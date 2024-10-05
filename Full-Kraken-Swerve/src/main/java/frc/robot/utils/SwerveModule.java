@@ -131,9 +131,9 @@ public class SwerveModule {
     drivePID.setD(Constants.kSwerve.DRIVE_KD);
     drivePID.setFF(Constants.kSwerve.DRIVE_KF);
  
-    driveEncoder.setPositionConversionFactor(Constants.kSwerve.DRIVE_ROTATIONS_TO_METERS);
-    driveEncoder.setVelocityConversionFactor(Constants.kSwerve.DRIVE_RPM_TO_METERS_PER_SECOND);
     driveMotor.setPosition(0);
+
+    
 
     // Angle motor configuration.
     angleMotor.restoreFactoryDefaults();

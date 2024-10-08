@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.mechanisms.swerve.utility.PhoenixPIDController;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
@@ -28,7 +29,7 @@ public class SwerveModule {
   public final int moduleNumber;
 
   private final TalonFX driveMotor;
-  private final SparkPIDController drivePID;
+  private final PhoenixPIDController drivePID;
   private final SimpleMotorFeedforward driveFeedforward;
 
   private final CANSparkMax angleMotor;
@@ -45,7 +46,7 @@ public class SwerveModule {
     this.moduleNumber = moduleNumber;
     
     driveMotor = new TalonFX(constants.driveMotorID);
-    drivePID = driveMotor.getPIDController();
+    drivePID = new PhoenixPIDController(Constants.kSwerve.DRIVE_KP, Constants.kSwerve.DRIVE_KI, Constants.kSwerve.DRIVE_KD);
     driveFeedforward = new SimpleMotorFeedforward(Constants.kSwerve.DRIVE_KS, Constants.kSwerve.DRIVE_KV, Constants.kSwerve.DRIVE_KA);
 
     angleMotor = new CANSparkMax(constants.angleMotorID, MotorType.kBrushless);

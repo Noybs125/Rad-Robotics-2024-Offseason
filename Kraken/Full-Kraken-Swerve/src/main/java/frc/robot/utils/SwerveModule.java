@@ -17,6 +17,7 @@ import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.configs.CANcoderConfigurator;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -31,6 +32,7 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final PhoenixPIDController drivePID;
   private final SimpleMotorFeedforward driveFeedforward;
+  private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
 
   private final CANSparkMax angleMotor;
   private final RelativeEncoder angleEncoder;
@@ -69,9 +71,11 @@ public class SwerveModule {
 
     if (isOpenLoop) {
       double speed = state.speedMetersPerSecond / Constants.kSwerve.MAX_VELOCITY_METERS_PER_SECOND;
-      drivePID.setReference(speed, CANSparkMax.ControlType.kDutyCycle);
+      //drivePID.setReference(speed, CANSparkMax.ControlType.kDutyCycle);
     } else {
-      drivePID.setReference(state.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity, 0, driveFeedforward.calculate(state.speedMetersPerSecond));
+      driveVelocity.Velocity = state.speedMetersPerSecond / Constants.kSwerve.WHEEL_CIRCUMFERENCE;
+      driveVelocity.FeedForward = driveFeedforward.calculate(state.speedMetersPerSecond);
+      driveMotor.setControl(driveVelocity);
     }
 
     double angle = Math.abs(state.speedMetersPerSecond) <= Constants.kSwerve.MAX_VELOCITY_METERS_PER_SECOND * 0.01
@@ -130,7 +134,7 @@ public class SwerveModule {
     drivePID.setP(Constants.kSwerve.DRIVE_KP);
     drivePID.setI(Constants.kSwerve.DRIVE_KI);
     drivePID.setD(Constants.kSwerve.DRIVE_KD);
-    drivePID.setFF(Constants.kSwerve.DRIVE_KF);
+    
  
     driveMotor.setPosition(0);
 

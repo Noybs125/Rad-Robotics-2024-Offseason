@@ -97,7 +97,7 @@ public class Constants {
 
     /** Idle modes. */
     public static final NeutralModeValue DRIVE_IDLE_MODE = NeutralModeValue.Brake;
-    public static final NeutralModeValue ANGLE_IDLE_MODE = NeutralModeValue.Coast;
+    public static final IdleMode ANGLE_IDLE_MODE = IdleMode.kCoast;
 
     /** 
      * Module specific constants.

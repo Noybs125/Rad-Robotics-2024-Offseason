@@ -66,7 +66,7 @@ public class Constants {
 
     /** Current limiting. */
     public static final int DRIVE_CURRENT_LIMIT = 40;
-    public static final int ANGLE_CURRENT_LIMIT = 40;
+    public static final int ANGLE_CURRENT_LIMIT = 20;
 
     /** Drive motor PID values. */
     public static final double DRIVE_KP = 0.1;
@@ -86,8 +86,8 @@ public class Constants {
     public static final double ANGLE_KF = 0.0;
     
     /** Swerve constraints. */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 2;
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 4;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.5;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 1;
     public static final double SENSITIVITY = 1;
 
     /** Inversions. */
@@ -105,30 +105,30 @@ public class Constants {
      * This is to make offset slightly more accurate and easier to measure.
      */
     public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FL -x +y
-      3,
-      4,
-      2,
+      12,//12
+      3,//3
+      0,
       91.40
     );
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
-      5,
-      6,
-      3,
+      11,//11
+      4,//4
+      1,
       128.49
     );
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
-      1,
+      7,//7
+      6,//6
       2,
-      1,
       134.4
     );
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
-      7,
-      8,
-      4,
+      9,//9
+      10,//10
+      3,
       75.49
     );
   }

@@ -39,8 +39,6 @@ public class SwerveModule {
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
 
   private final TalonFX angleMotor;
-  private double angleMotorPosition;
-  private double angleMotorVelocity;
   private final PhoenixPIDController anglePID;
   private final PositionVoltage anglePosition = new PositionVoltage(0);
 
@@ -60,8 +58,7 @@ public class SwerveModule {
     driveFeedforward = new SimpleMotorFeedforward(Constants.kSwerve.DRIVE_KS, Constants.kSwerve.DRIVE_KV, Constants.kSwerve.DRIVE_KA);
 
     angleMotor = new TalonFX(constants.angleMotorID);
-    angleMotorPosition = angleMotor.getPosition().getValueAsDouble();
-    angleMotorVelocity = angleMotor.getVelocity().getValueAsDouble();
+
     anglePID = new PhoenixPIDController(Constants.kSwerve.ANGLE_KP, Constants.kSwerve.ANGLE_KI, Constants.kSwerve.ANGLE_KD);
 
     canCoder = new CANcoder(constants.canCoderID);
@@ -98,7 +95,7 @@ public class SwerveModule {
 
   public SwerveModuleState getState() {
     double velocity = driveMotor.getVelocity().getValueAsDouble();
-    Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble());
+    Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
     return new SwerveModuleState(velocity, rot);
   }
 
@@ -107,12 +104,12 @@ public class SwerveModule {
   }
 
   public Rotation2d getAngle() {
-    return new Rotation2d(angleMotor.getPosition().getValueAsDouble());
+    return new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
   }
 
   public SwerveModulePosition getPosition() {
     double distance = driveMotor.getPosition().getValueAsDouble();
-    Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble());
+    Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
     return new SwerveModulePosition(distance, rot);
   }
 
@@ -166,8 +163,7 @@ public class SwerveModule {
 
 
     
-    angleMotorPosition = angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS;
-    angleMotorVelocity = angleMotor.getVelocity().getValueAsDouble() * Constants.kSwerve.ANGLE_RPM_TO_RADIANS_PER_SECOND;
+ 
     angleMotor.setPosition(Units.degreesToRadians((canCoder.getAbsolutePosition().getValueAsDouble() * 360) - canCoderOffsetDegrees)); // added ".getValue..."
   }
 }

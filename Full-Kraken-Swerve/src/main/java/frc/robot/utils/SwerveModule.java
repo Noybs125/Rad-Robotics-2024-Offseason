@@ -88,7 +88,7 @@ public class SwerveModule {
       ? lastAngle
       : state.angle.getRadians();
 
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getRadians()));
 
     lastAngle = angle;
   }

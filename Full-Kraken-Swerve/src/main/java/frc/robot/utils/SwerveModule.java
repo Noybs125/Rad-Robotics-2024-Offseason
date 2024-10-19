@@ -94,7 +94,7 @@ public class SwerveModule {
   }
 
   public SwerveModuleState getState() {
-    double velocity = driveMotor.getVelocity().getValueAsDouble();
+    double velocity = driveMotor.getVelocity().getValueAsDouble() * Constants.kSwerve.DRIVE_RPM_TO_METERS_PER_SECOND;
     Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
     return new SwerveModuleState(velocity, rot);
   }
@@ -104,11 +104,11 @@ public class SwerveModule {
   }
 
   public Rotation2d getAngle() {
-    return new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
+    return new Rotation2d(angleMotor.getPosition().getValueAsDouble());
   }
 
   public SwerveModulePosition getPosition() {
-    double distance = driveMotor.getPosition().getValueAsDouble();
+    double distance = driveMotor.getPosition().getValueAsDouble() * Constants.kSwerve.DRIVE_ROTATIONS_TO_METERS;
     Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
     return new SwerveModulePosition(distance, rot);
   }
@@ -164,6 +164,6 @@ public class SwerveModule {
 
     
  
-    angleMotor.setPosition(Units.degreesToRadians((canCoder.getAbsolutePosition().getValueAsDouble() * 360) - canCoderOffsetDegrees)); // added ".getValue..."
+    angleMotor.setPosition(Units.degreesToRotations((canCoder.getAbsolutePosition().getValueAsDouble() * 360) - canCoderOffsetDegrees)); // added ".getValue..."
   }
 }

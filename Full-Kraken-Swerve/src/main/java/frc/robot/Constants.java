@@ -56,7 +56,7 @@ public class Constants {
     public static final double DRIVE_GEAR_RATIO = 6.75 / 1.0; // 6.75:1
     public static final double DRIVE_ROTATIONS_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
     public static final double DRIVE_RPM_TO_METERS_PER_SECOND = DRIVE_ROTATIONS_TO_METERS / 60.0;
-    public static final double ANGLE_GEAR_RATIO = 21.43 / 1.0; // 21.43:1
+    public static final double ANGLE_GEAR_RATIO = 13.3714 / 1.0; // 21.43:1
     public static final double ANGLE_ROTATIONS_TO_RADIANS = (Math.PI * 2) / ANGLE_GEAR_RATIO;
     public static final double ANGLE_RPM_TO_RADIANS_PER_SECOND = ANGLE_ROTATIONS_TO_RADIANS / 60; // DRIVE_ROTATIONS_TO_METERS / 60.0;
 
@@ -66,7 +66,7 @@ public class Constants {
 
     /** Current limiting. */
     public static final int DRIVE_CURRENT_LIMIT = 40;
-    public static final int ANGLE_CURRENT_LIMIT = 20;
+    public static final int ANGLE_CURRENT_LIMIT = 35;
 
     /** Drive motor PID values. */
     public static final double DRIVE_KP = 0.1;
@@ -86,8 +86,8 @@ public class Constants {
     public static final double ANGLE_KF = 0.0;
     
     /** Swerve constraints. */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 0.5;
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 1;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 2;
     public static final double SENSITIVITY = 1;
 
     /** Inversions. */

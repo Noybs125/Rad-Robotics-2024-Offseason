@@ -82,7 +82,7 @@ public class SwerveModule {
       driveMotor.setControl(driveVelocity);
     }
 
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getRadians())); // may or may not use radians
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations())); // may or may not use radians
     SmartDashboard.putNumber("angle", state.angle.getRadians());
   }
 
@@ -97,7 +97,7 @@ public class SwerveModule {
   }
 
   public Rotation2d getAngle() {
-    return new Rotation2d(angleMotor.getPosition().getValueAsDouble());
+    return new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
   }
 
   public SwerveModulePosition getPosition() {

@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class SwerveModule {
@@ -48,8 +49,6 @@ public class SwerveModule {
   private final double canCoderOffsetDegrees;
   private final CANcoderConfigurator canConfig;
 
-  private double lastAngle;
-
   public SwerveModule(int moduleNumber, SwerveModuleConstants constants) {
     this.moduleNumber = moduleNumber;
     
@@ -66,7 +65,6 @@ public class SwerveModule {
     canConfig = canCoder.getConfigurator();
 
     configureDevices();
-    lastAngle = getState().angle.getRadians();
   }
 
   public void setState(SwerveModuleState state, boolean isOpenLoop) {
@@ -84,17 +82,12 @@ public class SwerveModule {
       driveMotor.setControl(driveVelocity);
     }
 
-    double angle = Math.abs(state.speedMetersPerSecond) <= Constants.kSwerve.MAX_VELOCITY_METERS_PER_SECOND * 0.01
-      ? lastAngle
-      : state.angle.getRadians();
-
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getRadians()));
-
-    lastAngle = angle;
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations())); // may or may not use radians
+    SmartDashboard.putNumber("angle", state.angle.getRadians());
   }
 
   public SwerveModuleState getState() {
-    double velocity = driveMotor.getVelocity().getValueAsDouble();
+    double velocity = driveMotor.getVelocity().getValueAsDouble() * Constants.kSwerve.DRIVE_RPM_TO_METERS_PER_SECOND;
     Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
     return new SwerveModuleState(velocity, rot);
   }
@@ -108,7 +101,7 @@ public class SwerveModule {
   }
 
   public SwerveModulePosition getPosition() {
-    double distance = driveMotor.getPosition().getValueAsDouble();
+    double distance = driveMotor.getPosition().getValueAsDouble() * Constants.kSwerve.DRIVE_ROTATIONS_TO_METERS;
     Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
     return new SwerveModulePosition(distance, rot);
   }
@@ -127,8 +120,6 @@ public class SwerveModule {
   
     // Drive motor configuration.
 
-    
-
     driveMotorConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.kSwerve.OPEN_LOOP_RAMP;
     driveMotorConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = Constants.kSwerve.CLOSED_LOOP_RAMP;
     driveMotorConfig.CurrentLimits.SupplyCurrentLimit = Constants.kSwerve.DRIVE_CURRENT_LIMIT; // change the constant
@@ -137,33 +128,28 @@ public class SwerveModule {
     driveMotor.setInverted(Constants.kSwerve.DRIVE_MOTOR_INVERSION);
     driveMotor.setNeutralMode(Constants.kSwerve.DRIVE_IDLE_MODE);
     
-    
     drivePID.setP(Constants.kSwerve.DRIVE_KP);
     drivePID.setI(Constants.kSwerve.DRIVE_KI);
     drivePID.setD(Constants.kSwerve.DRIVE_KD);
-    
  
     driveMotor.setPosition(0);
 
-    
+    driveMotor.getConfigurator().apply(driveMotorConfig);    
 
     // Angle motor configuration.
 
-
-
     angleMotorConfig.CurrentLimits.SupplyCurrentLimit = Constants.kSwerve.ANGLE_CURRENT_LIMIT;
+    angleMotorConfig.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
   
     angleMotor.setInverted(Constants.kSwerve.ANGLE_MOTOR_INVERSION);
     angleMotor.setNeutralMode(Constants.kSwerve.ANGLE_IDLE_MODE);
     
-
     anglePID.setP(Constants.kSwerve.ANGLE_KP);
     anglePID.setI(Constants.kSwerve.ANGLE_KI);
     anglePID.setD(Constants.kSwerve.ANGLE_KD);
 
-
+    angleMotor.getConfigurator().apply(angleMotorConfig);
     
- 
-    angleMotor.setPosition(Units.degreesToRadians((canCoder.getAbsolutePosition().getValueAsDouble() * 360) - canCoderOffsetDegrees)); // added ".getValue..."
+    angleMotor.setPosition(Units.degreesToRotations((canCoder.getAbsolutePosition().getValueAsDouble() * 360) - canCoderOffsetDegrees)); // added ".getValue..."
   }
 }

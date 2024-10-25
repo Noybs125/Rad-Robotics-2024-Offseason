@@ -73,6 +73,7 @@ public class SwerveModule {
     // System.out.println("Angle: " + state.angle.getRadians() + "Mod #: " + moduleNumber);
     state = SwerveModuleState.optimize(state, getState().angle);
 
+
     if (isOpenLoop) {
       double speed = state.speedMetersPerSecond / Constants.kSwerve.MAX_VELOCITY_METERS_PER_SECOND;
       //drivePID.setReference(speed, CANSparkMax.ControlType.kDutyCycle);
@@ -82,7 +83,11 @@ public class SwerveModule {
       driveMotor.setControl(driveVelocity);
     }
 
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations())); // may or may not use radians
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getDegrees())); // may or may not use radians
+  
+    SmartDashboard.putNumber("AnglePosition", anglePosition.Position);
+    SmartDashboard.putNumber("angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
+    SmartDashboard.putNumber("angleMotorRadians2", angleMotor.getPosition().getValueAsDouble() * (2 * Math.PI));
     SmartDashboard.putNumber("angle", state.angle.getRadians());
   }
 

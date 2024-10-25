@@ -41,9 +41,9 @@ public class Constants {
   /** All swerve constants. */
   public static class kSwerve {
     /** Constants that apply to the whole drive train. */
-    public static final double TRACK_WIDTH = Units.inchesToMeters(28); // Width of the drivetrain measured from the middle of the wheels.
-    public static final double WHEEL_BASE = Units.inchesToMeters(28); // Length of the drivetrain measured from the middle of the wheels.
-    public static final double WHEEL_DIAMETER = Units.inchesToMeters(3.75);
+    public static final double TRACK_WIDTH = Units.inchesToMeters(17.659); // Width of the drivetrain measured from the middle of the wheels.
+    public static final double WHEEL_BASE = Units.inchesToMeters(17.659); // Length of the drivetrain measured from the middle of the wheels.
+    public static final double WHEEL_DIAMETER = Units.inchesToMeters(4);
     public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
     public static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(
@@ -86,8 +86,8 @@ public class Constants {
     public static final double ANGLE_KF = 0.0;
     
     /** Swerve constraints. */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4;
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 2;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 1;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 0.5;
     public static final double SENSITIVITY = 1;
 
     /** Inversions. */
@@ -105,16 +105,16 @@ public class Constants {
      * This is to make offset slightly more accurate and easier to measure.
      */
     public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FL -x +y
-      12,//12
-      3,//3
-      0,
+      9,//12
+      10,//3
+      3,
       91.40
     );
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
-      11,//11
-      4,//4
-      1,
+      12,//11
+      3,//4
+      0,
       128.49
     );
 
@@ -126,9 +126,9 @@ public class Constants {
     );
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
-      9,//9
-      10,//10
-      3,
+      11,//9
+      4,//10
+      1,
       75.49
     );
   }

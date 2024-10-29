@@ -95,7 +95,7 @@ public class Constants {
     public static final boolean CANCODER_INVERSION = false;
 
     /** Idle modes. */
-    public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kCoast;
     public static final IdleMode ANGLE_IDLE_MODE = IdleMode.kCoast;
 
     /** 

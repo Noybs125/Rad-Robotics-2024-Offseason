@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Constants {
   /** All joystick, button, and axis IDs. */
   public static class kControls {
-    public static final double AXIS_DEADZONE = 0.1; // zero for path
+    public static final double AXIS_DEADZONE = 0.075; // zero for path
 
     public static final int LEFT_JOY_ID = 0;
     public static final int RIGHT_JOY_ID = 1;

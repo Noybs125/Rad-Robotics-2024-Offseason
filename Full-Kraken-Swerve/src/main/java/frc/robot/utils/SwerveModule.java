@@ -33,14 +33,12 @@ public class SwerveModule {
   public final int moduleNumber;
 
   private final TalonFX driveMotor;
-  private final PhoenixPIDController drivePID;
   private final SimpleMotorFeedforward driveFeedforward;
   private final TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
 
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
 
   private final TalonFX angleMotor;
-  private final PhoenixPIDController anglePID;
   private final PositionVoltage anglePosition = new PositionVoltage(0);
 
   TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
@@ -53,12 +51,9 @@ public class SwerveModule {
     this.moduleNumber = moduleNumber;
     
     driveMotor = new TalonFX(constants.driveMotorID);
-    drivePID = new PhoenixPIDController(Constants.kSwerve.DRIVE_KP, Constants.kSwerve.DRIVE_KI, Constants.kSwerve.DRIVE_KD);
     driveFeedforward = new SimpleMotorFeedforward(Constants.kSwerve.DRIVE_KS, Constants.kSwerve.DRIVE_KV, Constants.kSwerve.DRIVE_KA);
 
     angleMotor = new TalonFX(constants.angleMotorID);
-
-    anglePID = new PhoenixPIDController(Constants.kSwerve.ANGLE_KP, Constants.kSwerve.ANGLE_KI, Constants.kSwerve.ANGLE_KD);
 
     canCoder = new CANcoder(constants.canCoderID);
     canCoderOffsetDegrees = constants.canCoderOffsetDegrees;
@@ -83,12 +78,13 @@ public class SwerveModule {
       driveMotor.setControl(driveVelocity);
     }
 
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getDegrees())); // may or may not use radians
-  
-    SmartDashboard.putNumber("AnglePosition", anglePosition.Position);
-    SmartDashboard.putNumber("angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
-    SmartDashboard.putNumber("angleMotorRadians2", angleMotor.getPosition().getValueAsDouble() * (2 * Math.PI));
-    SmartDashboard.putNumber("angle", state.angle.getRadians());
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
+
+    SmartDashboard.putNumber("Mod " + moduleNumber + " AnglePosition", anglePosition.Position);
+    SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
+    SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians2", angleMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Mod " + moduleNumber + " calculated angle degrees", state.angle.getDegrees());
+    SmartDashboard.putNumber("Mod" + moduleNumber + " calculated angle rotations", state.angle.getRotations());
   }
 
   public SwerveModuleState getState() {
@@ -133,9 +129,9 @@ public class SwerveModule {
     driveMotor.setInverted(Constants.kSwerve.DRIVE_MOTOR_INVERSION);
     driveMotor.setNeutralMode(Constants.kSwerve.DRIVE_IDLE_MODE);
     
-    drivePID.setP(Constants.kSwerve.DRIVE_KP);
-    drivePID.setI(Constants.kSwerve.DRIVE_KI);
-    drivePID.setD(Constants.kSwerve.DRIVE_KD);
+    driveMotorConfig.Slot0.kP = Constants.kSwerve.DRIVE_KP;
+    driveMotorConfig.Slot0.kI = Constants.kSwerve.DRIVE_KI;
+    driveMotorConfig.Slot0.kD = Constants.kSwerve.DRIVE_KD;
  
     driveMotor.setPosition(0);
 
@@ -149,9 +145,12 @@ public class SwerveModule {
     angleMotor.setInverted(Constants.kSwerve.ANGLE_MOTOR_INVERSION);
     angleMotor.setNeutralMode(Constants.kSwerve.ANGLE_IDLE_MODE);
     
-    anglePID.setP(Constants.kSwerve.ANGLE_KP);
-    anglePID.setI(Constants.kSwerve.ANGLE_KI);
-    anglePID.setD(Constants.kSwerve.ANGLE_KD);
+    
+    angleMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
+    
+    angleMotorConfig.Slot0.kP = Constants.kSwerve.ANGLE_KP;
+    angleMotorConfig.Slot0.kI = Constants.kSwerve.ANGLE_KI;
+    angleMotorConfig.Slot0.kD = Constants.kSwerve.ANGLE_KD;
 
     angleMotor.getConfigurator().apply(angleMotorConfig);
     

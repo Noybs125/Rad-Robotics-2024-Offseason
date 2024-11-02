@@ -14,17 +14,18 @@ import frc.robot.subsystems.DriveTrain;
 public class RobotContainer {
   public final DriveTrain driveTrain;
  
-  public CommandXboxController commBox;
+  public CommandXboxController commBox = new CommandXboxController(2);
 
   public RobotContainer() {
 
     driveTrain = new DriveTrain();
-    commBox = new CommandXboxController(2);
+    
     configureBindings();
   }
 
   private void configureBindings() {
-    commBox.a().onTrue(driveTrain.runMotorsCommand(0.1)).onFalse(driveTrain.runMotorsCommand(0));
+    commBox.a().onTrue(driveTrain.runMotorsCommand(0.1))
+        .onFalse(driveTrain.runMotorsCommand(0));
   }
 
   public Command getAutonomousCommand() {

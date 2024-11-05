@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.io.IOException;
 
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -18,6 +19,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.EstimatedRobotPose;
+import java.util.Optional;
 import frc.robot.Constants;
 
 public class Vision extends SubsystemBase{
@@ -29,12 +34,12 @@ public class Vision extends SubsystemBase{
     private int bestTargetId;
 
     private final AHRS gyro;
-    private final Swerve swerve;
 
     public Pose2d robotPose = new Pose2d();
-    private Field2d field = new Field2d();
-
-    private ComplexWidget fieldPublisher;
+    public Pose3d estPose3d = new Pose3d();
+    private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+    private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, bestCameraToTarget);
+    private EstimatedRobotPose estRobotPose = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
 
     private AprilTagFieldLayout apriltagMap;
     {
@@ -45,11 +50,8 @@ public class Vision extends SubsystemBase{
         }
     }
 
-    public Vision(AHRS gyro, Swerve swerve){
+    public Vision(AHRS gyro){
         this.gyro = gyro;
-        this.swerve = swerve;
-
-        fieldPublisher = Shuffleboard.getTab("Odometry").add("field odometry", field).withWidget("Field");
     }
 
     public void periodic(){
@@ -59,20 +61,25 @@ public class Vision extends SubsystemBase{
             bestTarget = latestResult.getBestTarget();
             bestCameraToTarget = bestTarget.getBestCameraToTarget();
             bestTargetId = bestTarget.getFiducialId();
-            
-            calculateRobotPose();
         }
-        
-        field.setRobotPose(swerve.getPose());
+        if(getEstimatedGlobalPose(robotPose).isPresent()){
+            estRobotPose = getEstimatedGlobalPose(robotPose).get();
+            robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        }
     }
 
-    private void calculateRobotPose(){
+    public boolean updatePose(){
         if(apriltagMap.getTagPose(bestTargetId).isPresent()){
-            Pose3d tagLocation = apriltagMap.getTagPose(bestTargetId).get();
-            Pose3d cameraPose = tagLocation.transformBy(bestCameraToTarget);
-            robotPose = cameraPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
-            swerve.resetOdometry(robotPose);
-            //swerve.resetOdometry(new Pose2d(robotPose.getTranslation(), gyro.getRotation2d()));
+            return true;
         }
+        return false;
+    }
+    public Pose2d getRobotPose(){
+        robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        return robotPose;
+    }
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+        return photonPoseEstimator.update();
     }
 }

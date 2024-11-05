@@ -14,7 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -22,21 +22,30 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.SwerveModule;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.function.Supplier;
 import java.util.function.Consumer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 
 public class Swerve extends SubsystemBase {
   private final SwerveModule[] modules;
 
-  public final SwerveDriveOdometry swerveOdometry;
+  public final SwerveDrivePoseEstimator swerveOdometry;
+  private Field2d field = new Field2d();
 
   private final AHRS gyro;
+  private final Vision vision;
+  private ComplexWidget fieldPublisher;
+  
 
-  public Swerve(AHRS gyro) {
+  public Swerve(AHRS gyro, Vision vision) {
     this.gyro = gyro;
+    this.vision = vision;
+    fieldPublisher = Shuffleboard.getTab("Odometry").add("field odometry", field).withWidget("Field");
     zeroGyro();
 
     modules = new SwerveModule[] {
@@ -46,7 +55,7 @@ public class Swerve extends SubsystemBase {
       new SwerveModule(3, Constants.kSwerve.MOD_3_Constants),
     };
 
-    swerveOdometry = new SwerveDriveOdometry(Constants.kSwerve.KINEMATICS, getYaw(), getPositions());
+    swerveOdometry = new SwerveDrivePoseEstimator(Constants.kSwerve.KINEMATICS, getYaw(), getPositions(),vision.getRobotPose());
 
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
@@ -154,10 +163,10 @@ public class Swerve extends SubsystemBase {
   }
 
   public Pose2d getPose() {
-    return swerveOdometry.getPoseMeters();
+    return swerveOdometry.getEstimatedPosition();
   }
 
-  public void resetOdometry(Pose2d pose) {
+  public void resetOdometry(Pose2d pose) { // not currently used, using addVisionMeasurements in periodic instead.
     swerveOdometry.resetPosition(getYaw(), getPositions(), pose);
   }
 
@@ -176,13 +185,16 @@ public class Swerve extends SubsystemBase {
   @Override 
   public void periodic() {
     swerveOdometry.update(getYaw(), getPositions());
-
+    if(vision.updatePose()){
+      swerveOdometry.addVisionMeasurement(vision.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+    }
     for(SwerveModule mod : modules){
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees());
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
     }
     SmartDashboard.putNumber("Gyro Yaw", getYaw().getDegrees());
+    field.setRobotPose(getPose());
   }
 
   @Override

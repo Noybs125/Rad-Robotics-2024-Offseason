@@ -40,11 +40,10 @@ public class RobotContainer {
     rightJoyButtonTrig = new JoystickButton(rightJoy, 1);
     xbox = new XboxController(2);
     commXbox = new CommandXboxController(2);
-    
-    swerve = new Swerve(gyro);
-    vision = new Vision(gyro, swerve);
 
-    //NamedCommands.registerCommand("test command", auto1);
+    vision = new Vision(gyro);
+    
+    swerve = new Swerve(gyro, vision);
 
     autoChooser = AutoBuilder.buildAutoChooser();
 

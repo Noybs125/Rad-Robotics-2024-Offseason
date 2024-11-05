@@ -63,8 +63,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     swerve.setDefaultCommand(swerve.drive(
-      () -> Constants.kControls.Y_DRIVE_LIMITER.calculate(-(Math.pow(xbox.getLeftY(), 3) / Constants.kSwerve.SENSITIVITY)), 
-      () -> Constants.kControls.X_DRIVE_LIMITER.calculate(-(Math.pow(xbox.getLeftX(), 3) / Constants.kSwerve.SENSITIVITY)),  
+      () -> -Constants.kControls.Y_DRIVE_LIMITER.calculate(-(Math.pow(xbox.getLeftY(), 3) / Constants.kSwerve.SENSITIVITY)), 
+      () -> -Constants.kControls.X_DRIVE_LIMITER.calculate(-(Math.pow(xbox.getLeftX(), 3) / Constants.kSwerve.SENSITIVITY)),  
       () -> Constants.kControls.THETA_DRIVE_LIMITER.calculate(-xbox.getRightX()),
       true,
       false

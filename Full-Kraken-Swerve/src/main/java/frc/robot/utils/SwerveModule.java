@@ -81,9 +81,9 @@ public class SwerveModule {
     angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
 
     SmartDashboard.putNumber("Mod " + moduleNumber + " AnglePosition", anglePosition.Position);
-    SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
-    SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians2", angleMotor.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Mod " + moduleNumber + " calculated angle degrees", state.angle.getDegrees());
+    //SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
+    //SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians2", angleMotor.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Mod " + moduleNumber + " cancoder Rotations", canCoder.getAbsolutePosition().getValueAsDouble());
     SmartDashboard.putNumber("Mod" + moduleNumber + " calculated angle rotations", state.angle.getRotations());
   }
 
@@ -151,6 +151,8 @@ public class SwerveModule {
     angleMotorConfig.Slot0.kP = Constants.kSwerve.ANGLE_KP;
     angleMotorConfig.Slot0.kI = Constants.kSwerve.ANGLE_KI;
     angleMotorConfig.Slot0.kD = Constants.kSwerve.ANGLE_KD;
+
+    angleMotorConfig.Feedback.SensorToMechanismRatio = Constants.kSwerve.ANGLE_GEAR_RATIO;
 
     angleMotor.getConfigurator().apply(angleMotorConfig);
     

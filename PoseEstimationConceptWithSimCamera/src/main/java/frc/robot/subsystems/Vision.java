@@ -13,6 +13,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
@@ -22,19 +23,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.simulation.*;
 import java.util.Optional;
 import frc.robot.Constants;
+import frc.robot.Constants.vision;
 
 public class Vision extends SubsystemBase{
 
-    private final PhotonCamera limelight = new PhotonCamera("photonvision");
+    private final PhotonCamera camera = new PhotonCamera("photonvision");
     private PhotonPipelineResult latestResult;
     private PhotonTrackedTarget bestTarget;
     private Transform3d bestCameraToTarget;
     private int bestTargetId;
-
+    private VisionSystemSim visionSim = new VisionSystemSim("main");
+    SimCameraProperties cameraProp = new SimCameraProperties();
+    PhotonCameraSim cameraSim = new PhotonCameraSim(camera, cameraProp);    
     private final AHRS gyro;
-
     public Pose2d robotPose = new Pose2d();
     public Pose3d estPose3d = new Pose3d();
     private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
@@ -53,9 +57,17 @@ public class Vision extends SubsystemBase{
     public Vision(AHRS gyro){
         this.gyro = gyro;
     }
+    public void simulationInit(){
+        visionSim.addAprilTags(aprilTagFieldLayout);
+        cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+        cameraProp.setCalibError(0.35, 0.10);
+        cameraProp.setFPS(15);
+        cameraProp.setAvgLatencyMs(50);
+        cameraProp.setLatencyStdDevMs(15);
+    } 
 
     public void periodic(){
-        latestResult = limelight.getLatestResult();
+        latestResult = cameraSim.getLatestResult();
         
         if(latestResult.hasTargets()){
             bestTarget = latestResult.getBestTarget();

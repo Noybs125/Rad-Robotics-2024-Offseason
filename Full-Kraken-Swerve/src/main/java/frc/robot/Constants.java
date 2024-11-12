@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.SwerveModuleConstants;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -82,14 +83,14 @@ public class Constants {
     public static final double DRIVE_KA = 0.46034;
 
     /** Angle motor PID values. */
-    public static final double ANGLE_KP = 0.5;
-    public static final double ANGLE_KI = 0.0;
+    public static final double ANGLE_KP = 20;//3;
+    public static final double ANGLE_KI = 3.5;
     public static final double ANGLE_KD = 0;
     public static final double ANGLE_KF = 0.0;
     
     /** Swerve constraints. */
     public static final double MAX_VELOCITY_METERS_PER_SECOND = 1;
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = .5;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 5;
     public static final double SENSITIVITY = 1;
 
     /** Inversions. */
@@ -110,28 +111,28 @@ public class Constants {
       9,//12
       10,//3
       3,
-      106.43
+      222//315
     );
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
       12,//11
       3,//4
       0,
-      124.45
+      200//45, 200
     );
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
       7,//7
       6,//6
       2,
-      173.05
+      263.9//225 //173.05
     );
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
       11,//9
       4,//10
       1,
-      -52.99
+      214.7//135
     );
   }
 

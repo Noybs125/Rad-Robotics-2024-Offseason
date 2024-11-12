@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.SwerveModuleConstants;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -53,10 +54,10 @@ public class Constants {
       new Translation2d(-WHEEL_BASE / 2.0, -TRACK_WIDTH / 2.0)
     );
 
-    public static final double DRIVE_GEAR_RATIO = 5.96 / 1.0; // 6.75:1
+    public static final double DRIVE_GEAR_RATIO = 6.11 / 1.0; // 6.75:1
     public static final double DRIVE_ROTATIONS_TO_METERS = WHEEL_CIRCUMFERENCE / DRIVE_GEAR_RATIO;
     public static final double DRIVE_RPM_TO_METERS_PER_SECOND = DRIVE_ROTATIONS_TO_METERS / 60.0;
-    public static final double ANGLE_GEAR_RATIO = ((396.0 / 35.0) / 1.0); // 21.43:1
+    public static final double ANGLE_GEAR_RATIO = ((468.0 / 35.0) / 1.0); // 21.43:1
     public static final double ANGLE_ROTATIONS_TO_RADIANS = (Math.PI * 2) / ANGLE_GEAR_RATIO;
     public static final double ANGLE_RPM_TO_RADIANS_PER_SECOND = ANGLE_ROTATIONS_TO_RADIANS / 60; // DRIVE_ROTATIONS_TO_METERS / 60.0;
 
@@ -65,8 +66,10 @@ public class Constants {
     public static final double CLOSED_LOOP_RAMP = 0.0;
 
     /** Current limiting. */
-    public static final int DRIVE_CURRENT_LIMIT = 40;
-    public static final int ANGLE_CURRENT_LIMIT = 35;
+    public static final int DRIVE_CURRENT_LIMIT = 35;
+    public static final int DRIVE_CURRENT_THRESHOLD = 60;
+    public static final int ANGLE_CURRENT_LIMIT = 25;
+    public static final int ANGLE_CURRENT_THRESHOLD = 40;
 
     /** Drive motor PID values. */
     public static final double DRIVE_KP = 0.1;
@@ -80,14 +83,14 @@ public class Constants {
     public static final double DRIVE_KA = 0.46034;
 
     /** Angle motor PID values. */
-    public static final double ANGLE_KP = 0.5;
-    public static final double ANGLE_KI = 0.0;
+    public static final double ANGLE_KP = 20;//3;
+    public static final double ANGLE_KI = 3.5;
     public static final double ANGLE_KD = 0;
     public static final double ANGLE_KF = 0.0;
     
     /** Swerve constraints. */
-    public static final double MAX_VELOCITY_METERS_PER_SECOND = 4;
-    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 2;
+    public static final double MAX_VELOCITY_METERS_PER_SECOND = 1;
+    public static final double MAX_ANGULAR_RADIANS_PER_SECOND = 5;
     public static final double SENSITIVITY = 1;
 
     /** Inversions. */
@@ -108,28 +111,28 @@ public class Constants {
       9,//12
       10,//3
       3,
-      91.40
+      222//315
     );
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
       12,//11
       3,//4
       0,
-      128.49
+      200//45, 200
     );
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
       7,//7
       6,//6
       2,
-      134.4
+      263.9//225 //173.05
     );
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
       11,//9
       4,//10
       1,
-      75.49
+      214.7//135
     );
   }
 

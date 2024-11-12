@@ -42,17 +42,8 @@ public class Vision extends SubsystemBase{
     public Pose2d robotPose = new Pose2d();
     public Pose3d estPose3d = new Pose3d();
     private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, limelight, bestCameraToTarget);
+    private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera, bestCameraToTarget);
     private EstimatedRobotPose estRobotPose = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
-
-    private AprilTagFieldLayout apriltagMap;
-    {
-        try {
-            apriltagMap = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-        } catch (IOException e){
-            throw new RuntimeException(e);
-        }
-    }
 
     public Vision(AHRS gyro){
         this.gyro = gyro;
@@ -67,7 +58,7 @@ public class Vision extends SubsystemBase{
     } 
 
     public void periodic(){
-        latestResult = cameraSim.getLatestResult();
+        latestResult = camera.getLatestResult();
         
         if(latestResult.hasTargets()){
             bestTarget = latestResult.getBestTarget();

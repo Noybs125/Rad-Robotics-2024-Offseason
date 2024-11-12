@@ -4,10 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -16,6 +19,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import java.util.List;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.simulation.*;
 
 public class Robot extends TimedRobot {
   private final XboxController m_controller = new XboxController(0);
@@ -29,6 +40,16 @@ public class Robot extends TimedRobot {
   private final RamseteController m_ramsete = new RamseteController();
   private final Timer m_timer = new Timer();
   private Trajectory m_trajectory;
+  private final PhotonCamera camera = new PhotonCamera("photonvision");
+  private PhotonPipelineResult latestResult;
+  private PhotonTrackedTarget bestTarget;
+  private Transform3d bestCameraToTarget;
+  private int bestTargetId;
+  private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+   // private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, camera, bestCameraToTarget);
+   // private EstimatedRobotPose estRobotPose = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
+  private VisionSystemSim visionSim = new VisionSystemSim("main");
+  SimCameraProperties cameraProp = new SimCameraProperties(); 
 
   @Override
   public void robotInit() {
@@ -38,6 +59,13 @@ public class Robot extends TimedRobot {
             List.of(),
             new Pose2d(6, 4, new Rotation2d()),
             new TrajectoryConfig(2, 2));
+    visionSim.addAprilTags(aprilTagFieldLayout);
+    cameraProp.setCalibration(960, 720, Rotation2d.fromDegrees(90));
+    cameraProp.setCalibError(0.35, 0.10);
+    cameraProp.setFPS(15);
+    cameraProp.setAvgLatencyMs(50);
+    cameraProp.setLatencyStdDevMs(15);
+    PhotonCameraSim cameraSim = new PhotonCameraSim(camera, cameraProp);
   }
 
   @Override

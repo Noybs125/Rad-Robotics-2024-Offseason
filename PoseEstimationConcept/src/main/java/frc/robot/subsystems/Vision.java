@@ -56,18 +56,18 @@ public class Vision extends SubsystemBase{
 
     public void periodic(){
         latestResult = limelight.getLatestResult();
-        
+        if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
+                photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
+        }
         if(latestResult.hasTargets()){
             bestTarget = latestResult.getBestTarget();
             bestCameraToTarget = bestTarget.getBestCameraToTarget();
             bestTargetId = bestTarget.getFiducialId();
         }
-        if(getEstimatedGlobalPose(robotPose).isPresent()){
-            if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
-                photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
-            }
-            estRobotPose = getEstimatedGlobalPose(robotPose).get();
-            robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        Optional<EstimatedRobotPose> estPose = getEstimatedGlobalPose(robotPose);
+        if(estPose.isPresent()){
+            estRobotPose = estPose.get();
+            robotPose = estRobotPose.estimatedPose.toPose2d();
         }
     }
 
@@ -78,7 +78,7 @@ public class Vision extends SubsystemBase{
         return false;
     }
     public Pose2d getRobotPose(){
-        robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        robotPose = estRobotPose.estimatedPose.toPose2d();
         return robotPose;
     }
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {

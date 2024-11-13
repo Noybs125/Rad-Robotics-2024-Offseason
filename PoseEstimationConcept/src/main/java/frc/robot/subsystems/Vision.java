@@ -63,6 +63,9 @@ public class Vision extends SubsystemBase{
             bestTargetId = bestTarget.getFiducialId();
         }
         if(getEstimatedGlobalPose(robotPose).isPresent()){
+            if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
+                photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
+            }
             estRobotPose = getEstimatedGlobalPose(robotPose).get();
             robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
         }

@@ -111,28 +111,29 @@ public class Constants {
       9,//12
       10,//3
       3,
-      222//315
+      38 //315
     );
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
       12,//11
       3,//4
       0,
-      200//45, 200
+      196 //45, 200
+      // 40, 12, 80, 36
     );
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
       7,//7
       6,//6
       2,
-      263.9//225 //173.05
+      89//225 //173.05
     );
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
       11,//9
       4,//10
       1,
-      214.7//135
+      36 //135
     );
   }
 

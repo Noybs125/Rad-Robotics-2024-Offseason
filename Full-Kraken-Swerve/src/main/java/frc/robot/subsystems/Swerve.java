@@ -38,6 +38,8 @@ public class Swerve extends SubsystemBase {
   private final AHRS gyro;
 
   private StructArrayPublisher<SwerveModuleState> swervePublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("Actual Swerve States", SwerveModuleState.struct).publish();
+  private StructArrayPublisher<SwerveModuleState> swervePublisher2 = NetworkTableInstance.getDefault()
       .getStructArrayTopic("Calculated Swerve States", SwerveModuleState.struct).publish();
 
   public Swerve() {
@@ -121,6 +123,7 @@ public class Swerve extends SubsystemBase {
     for (int i = 0; i < modules.length; i++) {
       modules[i].setState(states[modules[i].moduleNumber], isOpenLoop);
     }
+    swervePublisher2.set(states);
   }
 
   public SwerveModuleState[] getStates() {

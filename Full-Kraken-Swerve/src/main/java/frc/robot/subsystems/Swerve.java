@@ -17,6 +17,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +36,9 @@ public class Swerve extends SubsystemBase {
   private final SwerveDriveOdometry swerveOdometry;
 
   private final AHRS gyro;
+
+  private StructArrayPublisher<SwerveModuleState> swervePublisher = NetworkTableInstance.getDefault()
+      .getStructArrayTopic("Calculated Swerve States", SwerveModuleState.struct).publish();
 
   public Swerve() {
     gyro = new AHRS();
@@ -100,6 +105,7 @@ public class Swerve extends SubsystemBase {
       SwerveModuleState[] states = Constants.kSwerve.KINEMATICS.toSwerveModuleStates(chassisSpeeds);
 
       setModuleStates(states, isOpenLoop);
+
     }).withName("SwerveDriveCommand");
   }
 
@@ -171,6 +177,8 @@ public class Swerve extends SubsystemBase {
   public void periodic() {
 
     swerveOdometry.update(getYaw(), getPositions());
+    
+    swervePublisher.set(getStates());
 
     for(SwerveModule mod : modules){
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees());

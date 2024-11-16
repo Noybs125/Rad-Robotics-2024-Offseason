@@ -82,7 +82,7 @@ public class SwerveModule {
       driveMotor.setControl(driveVelocity);
     }
 
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations() + 0.25));
 
     SmartDashboard.putNumber("Mod " + moduleNumber + " AnglePosition", anglePosition.Position);
     //SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
@@ -176,6 +176,6 @@ public class SwerveModule {
 
     angleMotor.getConfigurator().apply(angleMotorConfig);
     
-    angleMotor.setPosition(canCoder.getAbsolutePosition().getValueAsDouble() - (canCoderOffsetDegrees / 360)); // added ".getValue..."
+    //angleMotor.setPosition(canCoder.getAbsolutePosition().getValueAsDouble() - (canCoderOffsetDegrees / 360)); // added ".getValue..."
   }
 }

@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Constants {
   /** All joystick, button, and axis IDs. */
   public static class kControls {
-    public static final double AXIS_DEADZONE = 0.1; // zero for path
+    public static final double AXIS_DEADZONE = 0; // zero for path
 
     public static final int LEFT_JOY_ID = 0;
     public static final int RIGHT_JOY_ID = 1;
@@ -83,8 +83,8 @@ public class Constants {
     public static final double DRIVE_KA = 0.46034;
 
     /** Angle motor PID values. */
-    public static final double ANGLE_KP = 20;//3;
-    public static final double ANGLE_KI = 3.5;
+    public static final double ANGLE_KP = 40;//3;
+    public static final double ANGLE_KI = 5;
     public static final double ANGLE_KD = 0;
     public static final double ANGLE_KF = 0.0;
     
@@ -119,7 +119,6 @@ public class Constants {
       3,//4
       0,
       196 //45, 200
-      // 40, 12, 80, 36
     );
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y

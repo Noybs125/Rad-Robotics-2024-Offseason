@@ -24,65 +24,50 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.EstimatedRobotPose;
 import java.util.Optional;
 import frc.robot.Constants;
+import frc.robot.Constants.vision;
+import frc.robot.utils.Camera;
 
 public class Vision extends SubsystemBase{
 
-    private final PhotonCamera limelight = new PhotonCamera("photonvision");
-    private PhotonPipelineResult latestResult;
-    private PhotonTrackedTarget bestTarget;
-    private Transform3d bestCameraToTarget;
-    private int bestTargetId;
+    private PhotonCamera camera1 = new PhotonCamera("photonvision1");
+    private PhotonCamera camera2 = new PhotonCamera("photonvision2");
+    private PhotonCamera camera3 = new PhotonCamera("photonvision3");
+
+
 
     private final AHRS gyro;
 
     public Pose2d robotPose = new Pose2d();
     public Pose3d estPose3d = new Pose3d();
     private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
-    private PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.AVERAGE_BEST_TARGETS, limelight, bestCameraToTarget);
-    private EstimatedRobotPose estRobotPose = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
+    public EstimatedRobotPose estRobotPose1 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
+    public EstimatedRobotPose estRobotPose2 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
+    public EstimatedRobotPose estRobotPose3 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
 
-    private AprilTagFieldLayout apriltagMap;
-    {
-        try {
-            apriltagMap = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
-        } catch (IOException e){
-            throw new RuntimeException(e);
-        }
-    }
+    
+    public final Camera limelight = new Camera(camera1, this, estRobotPose1);
+    public final Camera orangepi1 = new Camera(camera2, this, estRobotPose2);
+    public final Camera orangepi2 = new Camera(camera3, this, estRobotPose3);
 
     public Vision(AHRS gyro){
         this.gyro = gyro;
     }
 
     public void periodic(){
-        latestResult = limelight.getLatestResult();
-        
-        if(latestResult.hasTargets()){
-            bestTarget = latestResult.getBestTarget();
-            bestCameraToTarget = bestTarget.getBestCameraToTarget();
-            bestTargetId = bestTarget.getFiducialId();
+        robotPose = estRobotPose1.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        if(limelight.getEstimatedGlobalPose(robotPose).isPresent()){
+            estRobotPose1 = limelight.getEstimatedGlobalPose(robotPose).get();
         }
-        if(getEstimatedGlobalPose(robotPose).isPresent()){
-            if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
-                photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
-            }
-            estRobotPose = getEstimatedGlobalPose(robotPose).get();
-            robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        robotPose = estRobotPose2.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        if(orangepi1.getEstimatedGlobalPose(robotPose).isPresent()){
+            estRobotPose2 = orangepi1.getEstimatedGlobalPose(robotPose).get();
         }
-    }
-
-    public boolean updatePose(){
-        if(apriltagMap.getTagPose(bestTargetId).isPresent()){
-            return true;
+        robotPose = estRobotPose3.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        if(orangepi2.getEstimatedGlobalPose(robotPose).isPresent()){
+            estRobotPose3 = orangepi2.getEstimatedGlobalPose(robotPose).get();
         }
-        return false;
-    }
-    public Pose2d getRobotPose(){
-        robotPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
-        return robotPose;
-    }
-    public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-        return photonPoseEstimator.update();
+        limelight.periodic();
+        orangepi1.periodic();
+        orangepi2.periodic();
     }
 }

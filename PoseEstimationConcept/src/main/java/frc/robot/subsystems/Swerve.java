@@ -21,6 +21,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.Vision;
 import frc.robot.utils.SwerveModule;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,7 +56,7 @@ public class Swerve extends SubsystemBase {
       new SwerveModule(3, Constants.kSwerve.MOD_3_Constants),
     };
 
-    swerveOdometry = new SwerveDrivePoseEstimator(Constants.kSwerve.KINEMATICS, getYaw(), getPositions(),vision.getRobotPose());
+    swerveOdometry = new SwerveDrivePoseEstimator(Constants.kSwerve.KINEMATICS, getYaw(), getPositions(),vision.orangepi1.getRobotPose());
 
     AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
@@ -185,8 +186,14 @@ public class Swerve extends SubsystemBase {
   @Override 
   public void periodic() {
     swerveOdometry.update(getYaw(), getPositions());
-    if(vision.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+    if(vision.orangepi1.updatePose()){
+      swerveOdometry.addVisionMeasurement(vision.orangepi1.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+    }
+    if(vision.limelight.updatePose()){
+      swerveOdometry.addVisionMeasurement(vision.limelight.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+    }
+    if(vision.orangepi2.updatePose()){
+      swerveOdometry.addVisionMeasurement(vision.orangepi2.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
     }
     for(SwerveModule mod : modules){
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees());

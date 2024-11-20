@@ -65,7 +65,8 @@ public class Camera {
             bestCameraToTarget = bestTarget.getBestCameraToTarget();
             bestTargetId = bestTarget.getFiducialId();
         }
-        if(getEstimatedGlobalPose(vision.robotPose).isPresent()){
+        Optional<EstimatedRobotPose> estPose = getEstimatedGlobalPose(vision.robotPose);
+        if(estPose.isPresent()){
             if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
                 photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
             }

@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Constants {
   /** All joystick, button, and axis IDs. */
   public static class kControls {
-    public static final double AXIS_DEADZONE = 0; // zero for path
+    public static final double AXIS_DEADZONE = 0.15; // zero for path
 
     public static final int LEFT_JOY_ID = 0;
     public static final int RIGHT_JOY_ID = 1;
@@ -108,31 +108,35 @@ public class Constants {
      * This is to make offset slightly more accurate and easier to measure.
      */
     public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FL -x +y
-      9,//12
-      10,//3
+      9,
+      10,
       3,
-      38 //315
+      38,
+      true
     );
 
     public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
-      12,//11
-      3,//4
+      12,
+      3,
       0,
-      196 //45, 200
+      196,
+      true
     );
 
     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
-      7,//7
-      6,//6
+      7,
+      6,
       2,
-      89//225 //173.05
+      89,
+      true
     );
 
     public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
-      11,//9
-      4,//10
+      11,
+      4,
       1,
-      36 //135
+      36, 
+      true
     );
   }
 

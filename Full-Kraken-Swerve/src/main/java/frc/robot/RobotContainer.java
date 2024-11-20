@@ -63,8 +63,8 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     swerve.setDefaultCommand(swerve.drive(
-      () -> -xbox.getLeftY(), 
-      () -> -xbox.getLeftX(),  
+      () -> xbox.getLeftY(), 
+      () -> xbox.getLeftX(),  
       () -> -xbox.getRightX(),
       true,
       false

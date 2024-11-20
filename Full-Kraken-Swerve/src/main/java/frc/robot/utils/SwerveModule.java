@@ -36,6 +36,7 @@ public class SwerveModule {
   private final TalonFX driveMotor;
   private final SimpleMotorFeedforward driveFeedforward;
   private final TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
+  private boolean driveMotorInversion;
   private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
 
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
@@ -54,6 +55,7 @@ public class SwerveModule {
     this.moduleNumber = moduleNumber;
     
     driveMotor = new TalonFX(constants.driveMotorID);
+    driveMotorInversion = constants.isInverted;
     driveFeedforward = new SimpleMotorFeedforward(Constants.kSwerve.DRIVE_KS, Constants.kSwerve.DRIVE_KV, Constants.kSwerve.DRIVE_KA);
 
     angleMotor = new TalonFX(constants.angleMotorID);
@@ -82,7 +84,7 @@ public class SwerveModule {
       driveMotor.setControl(driveVelocity);
     }
 
-    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations() + 0.25));
+    angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
 
     SmartDashboard.putNumber("Mod " + moduleNumber + " AnglePosition", anglePosition.Position);
     //SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
@@ -141,7 +143,7 @@ public class SwerveModule {
     driveMotorConfig.Slot0.kV = Constants.kSwerve.DRIVE_KV;
     driveMotorConfig.Slot0.kA = Constants.kSwerve.DRIVE_KA;
 
-    driveMotor.setInverted(Constants.kSwerve.DRIVE_MOTOR_INVERSION);
+    driveMotor.setInverted(driveMotorInversion);
     driveMotor.setNeutralMode(Constants.kSwerve.DRIVE_IDLE_MODE);
     
     driveMotorConfig.Slot0.kP = Constants.kSwerve.DRIVE_KP;

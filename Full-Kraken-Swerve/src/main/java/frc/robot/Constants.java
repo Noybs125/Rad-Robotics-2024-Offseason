@@ -107,7 +107,17 @@ public class Constants {
      * CanCoder offset is in DEGREES, not radians like the rest of the repo.
      * This is to make offset slightly more accurate and easier to measure.
      */
-    public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FL -x +y
+    
+
+    public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FR +x +y
+      12,
+      3,
+      0,
+      196,
+      true
+    );
+    
+    public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FL -x +y
       9,
       10,
       3,
@@ -115,27 +125,20 @@ public class Constants {
       true
     );
 
-    public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
-      12,
-      3,
-      0,
-      196,
-      true
-    );
-
-    public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
-      7,
-      6,
-      2,
-      89,
-      true
-    );
-
-    public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
+    
+     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BR +x -y
       11,
       4,
       1,
       36, 
+      true
+    );
+
+    public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BL -x -y
+      7,
+      6,
+      2,
+      89,
       true
     );
   }

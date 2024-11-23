@@ -4,8 +4,6 @@ import java.util.function.DoubleSupplier;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.FollowPathHolonomic;
-import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
@@ -21,12 +19,9 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.Vision;
 import frc.robot.utils.SwerveModule;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.function.Supplier;
-import java.util.function.Consumer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -187,13 +182,13 @@ public class Swerve extends SubsystemBase {
   public void periodic() {
     swerveOdometry.update(getYaw(), getPositions());
     if(vision.orangepi1.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.orangepi1.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+      swerveOdometry.addVisionMeasurement(vision.orangepi1.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi1.getPoseAmbiguity());
     }
     if(vision.limelight.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.limelight.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+      swerveOdometry.addVisionMeasurement(vision.limelight.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.limelight.getPoseAmbiguity());
     }
     if(vision.orangepi2.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.orangepi2.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp());
+      swerveOdometry.addVisionMeasurement(vision.orangepi2.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi2.getPoseAmbiguity());
     }
     for(SwerveModule mod : modules){
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees());

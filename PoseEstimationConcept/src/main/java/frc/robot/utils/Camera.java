@@ -12,21 +12,15 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.EstimatedRobotPose;
 import java.util.Optional;
 import frc.robot.Constants;
-import frc.robot.Constants.vision;
 import frc.robot.subsystems.Vision;
+import edu.wpi.first.math.Matrix;
 
 public class Camera {
     private Vision vision;
@@ -54,7 +48,7 @@ public class Camera {
         this.camera = camera;
         this.vision = vision;
         this.estRobotPose = estRobotPose;
-        this.photonPoseEstimator = new PhotonPoseEstimator(apriltagMap, PoseStrategy.AVERAGE_BEST_TARGETS, camera, bestCameraToTarget);
+        this.photonPoseEstimator = new PhotonPoseEstimator(apriltagMap, PoseStrategy.AVERAGE_BEST_TARGETS, camera, Constants.vision.cameraToRobotCenter);
 
     }
     public void periodic(){
@@ -87,6 +81,21 @@ public class Camera {
     public Pose2d getRobotPose(){
         newPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
         return newPose;
+    }
+    public Matrix<N3, N1> getPoseAmbiguity(){
+        double smallestDistance = Double.POSITIVE_INFINITY;
+        for (var target : estRobotPose.targetsUsed) {
+            var t3d = target.getBestCameraToTarget();
+            var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+            if (distance < smallestDistance) {
+            smallestDistance = distance;
+            }
+        }
+        double poseAmbiguityFactor = estRobotPose.targetsUsed.size() != 1
+            ? 1
+            : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);
+        double confidenceMultiplier = Math.max(1,(Math.max(1, Math.max(0, smallestDistance - Constants.vision.NOISY_DISTANCE_METERS) * Constants.vision.DISTANCE_WEIGHT) * poseAmbiguityFactor) / (1 + ((estRobotPose.targetsUsed.size() - 1) * Constants.vision.TAG_PRESENCE_WEIGHT)));
+        return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
     }
 }
 

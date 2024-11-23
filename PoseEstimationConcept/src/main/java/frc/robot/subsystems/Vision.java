@@ -1,30 +1,13 @@
 package frc.robot.subsystems;
 
-import java.io.IOException;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonPipelineResult;
-import org.photonvision.targeting.PhotonTrackedTarget;
-
 import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.EstimatedRobotPose;
-import java.util.Optional;
 import frc.robot.Constants;
-import frc.robot.Constants.vision;
 import frc.robot.utils.Camera;
 
 public class Vision extends SubsystemBase{
@@ -36,10 +19,8 @@ public class Vision extends SubsystemBase{
 
 
     private final AHRS gyro;
-
     public Pose2d robotPose = new Pose2d();
     public Pose3d estPose3d = new Pose3d();
-    private AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
     public EstimatedRobotPose estRobotPose1 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
     public EstimatedRobotPose estRobotPose2 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
     public EstimatedRobotPose estRobotPose3 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);

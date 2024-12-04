@@ -71,6 +71,7 @@ public class SwerveModule {
     // Prevents angle motor from turning further than it needs to. 
     // E.G. rotating from 10 to 270 degrees CW vs CCW.
     // System.out.println("Angle: " + state.angle.getRadians() + "Mod #: " + moduleNumber);
+
     state = SwerveModuleState.optimize(state, getState().angle);
 
 
@@ -95,7 +96,7 @@ public class SwerveModule {
 
   public SwerveModuleState getState() {
     double velocity = driveMotor.getVelocity().getValueAsDouble() * Constants.kSwerve.DRIVE_RPM_TO_METERS_PER_SECOND;
-    Rotation2d rot = new Rotation2d(angleMotor.getPosition().getValueAsDouble());
+    Rotation2d rot = Rotation2d.fromRotations(angleMotor.getPosition().getValueAsDouble());
     return new SwerveModuleState(velocity, rot);
   }
 

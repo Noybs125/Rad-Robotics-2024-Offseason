@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import com.kauailabs.navx.frc.AHRS;
@@ -14,8 +16,8 @@ import frc.robot.utils.Camera;
 public class Vision extends SubsystemBase{
     // we on longer have a limelight on the robot, however we may one day need to put it back on again. Therefore, I have left this code inside of the program, although it may make it less readable, it could be useful one day. Thank you for taking the time to read this wonderful message and I hope you have a great day :D
     //private PhotonCamera camera1 = new PhotonCamera("photonvision1");
-    private PhotonCamera camera2 = new PhotonCamera("photonvision2");
-    private PhotonCamera camera3 = new PhotonCamera("photonvision3");
+    private PhotonCamera camera2 = new PhotonCamera("OV9281_1");
+    private PhotonCamera camera3 = new PhotonCamera("OV9281_3");
 
 
 
@@ -41,15 +43,17 @@ public class Vision extends SubsystemBase{
         //{
         //    estRobotPose1 = limelight.getEstimatedGlobalPose(robotPose).get();
         //}
+        Optional<EstimatedRobotPose> estPose = orangepi1.getEstimatedGlobalPose(robotPose);
         robotPose = estRobotPose2.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
-        if(orangepi1.getEstimatedGlobalPose(robotPose).isPresent())
+        if(estPose.isPresent())
         {
-            estRobotPose2 = orangepi1.getEstimatedGlobalPose(robotPose).get();
+            estRobotPose2 = estPose.get();
         }
+        estPose = orangepi2.getEstimatedGlobalPose(robotPose);
         robotPose = estRobotPose3.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
-        if(orangepi2.getEstimatedGlobalPose(robotPose).isPresent())
+        if(estPose.isPresent())
         {
-            estRobotPose3 = orangepi2.getEstimatedGlobalPose(robotPose).get();
+            estRobotPose3 = estPose.get();
         }
         //limelight.periodic();
         orangepi1.periodic();

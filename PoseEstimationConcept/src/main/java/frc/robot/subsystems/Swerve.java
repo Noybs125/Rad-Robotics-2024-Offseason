@@ -43,6 +43,7 @@ public class Swerve extends SubsystemBase {
     this.vision = vision;
     fieldPublisher = Shuffleboard.getTab("Odometry").add("field odometry", field).withWidget("Field");
     zeroGyro();
+    
 
     modules = new SwerveModule[] {
       new SwerveModule(0, Constants.kSwerve.MOD_0_Constants),

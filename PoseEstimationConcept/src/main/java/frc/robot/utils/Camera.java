@@ -66,7 +66,7 @@ public class Camera {
             if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
                 photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
             }
-            estRobotPose = getEstimatedGlobalPose(vision.robotPose).get();
+            estRobotPose = estPose.get();
         }
     }
 

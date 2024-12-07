@@ -15,6 +15,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import java.util.Optional;
@@ -64,7 +66,7 @@ public class Camera {
             if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
                 photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
             }
-            estRobotPose = getEstimatedGlobalPose(vision.robotPose).get();
+            estRobotPose = estPose.get();
         }
     }
 
@@ -95,6 +97,7 @@ public class Camera {
             ? 1
             : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);
         double confidenceMultiplier = Math.max(1,(Math.max(1, Math.max(0, smallestDistance - Constants.vision.NOISY_DISTANCE_METERS) * Constants.vision.DISTANCE_WEIGHT) * poseAmbiguityFactor) / (1 + ((estRobotPose.targetsUsed.size() - 1) * Constants.vision.TAG_PRESENCE_WEIGHT)));
+        SmartDashboard.putNumber(camera.getName(), confidenceMultiplier);
         return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
     }
 }

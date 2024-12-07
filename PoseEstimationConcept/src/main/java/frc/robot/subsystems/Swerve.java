@@ -43,6 +43,7 @@ public class Swerve extends SubsystemBase {
     this.vision = vision;
     fieldPublisher = Shuffleboard.getTab("Odometry").add("field odometry", field).withWidget("Field");
     zeroGyro();
+    
 
     modules = new SwerveModule[] {
       new SwerveModule(0, Constants.kSwerve.MOD_0_Constants),
@@ -184,9 +185,9 @@ public class Swerve extends SubsystemBase {
     if(vision.orangepi1.updatePose()){
       swerveOdometry.addVisionMeasurement(vision.orangepi1.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi1.getPoseAmbiguity());
     }
-    if(vision.limelight.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.limelight.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.limelight.getPoseAmbiguity());
-    }
+    //if(vision.limelight.updatePose()){
+    //  swerveOdometry.addVisionMeasurement(vision.limelight.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.limelight.getPoseAmbiguity());
+    //}
     if(vision.orangepi2.updatePose()){
       swerveOdometry.addVisionMeasurement(vision.orangepi2.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi2.getPoseAmbiguity());
     }

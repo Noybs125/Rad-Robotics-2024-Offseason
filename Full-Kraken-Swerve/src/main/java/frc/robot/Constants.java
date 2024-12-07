@@ -113,7 +113,7 @@ public class Constants {
       12,
       3,
       0,
-      196,
+      0.032,
       true
     );
     
@@ -121,7 +121,7 @@ public class Constants {
       9,
       10,
       3,
-      38,
+      -0.371,
       true
     );
 
@@ -130,7 +130,7 @@ public class Constants {
       11,
       4,
       1,
-      36, 
+      -0.392, 
       true
     );
 
@@ -138,7 +138,7 @@ public class Constants {
       7,
       6,
       2,
-      89,
+      -0.261,
       true
     );
   }

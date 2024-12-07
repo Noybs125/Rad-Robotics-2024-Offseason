@@ -108,6 +108,10 @@ public class Swerve extends SubsystemBase {
 
       setModuleStates(states, isOpenLoop);
 
+      for (int i = 0; i < states.length; i++) {
+        SmartDashboard.putNumber("Mod " + i + "Calculated Angle", states[i].angle.getRotations());
+      }
+
     }).withName("SwerveDriveCommand");
   }
 
@@ -184,9 +188,11 @@ public class Swerve extends SubsystemBase {
     swervePublisher.set(getStates());
 
     for(SwerveModule mod : modules){
-      SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees());
+      SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees() / 360);
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);    
+      SmartDashboard.putNumber("Mod " + mod.moduleNumber + "AngleMotorPosition", mod.angleMotor.getPosition().getValueAsDouble());
+      
   }
   SmartDashboard.putNumber("Gyro Yaw", getYaw().getDegrees());
   }

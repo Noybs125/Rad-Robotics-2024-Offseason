@@ -40,14 +40,14 @@ public class SwerveModule {
   private final DutyCycleOut driveDutyCycle = new DutyCycleOut(0);
 
   private final VelocityVoltage driveVelocity = new VelocityVoltage(0);
-
-  private final TalonFX angleMotor;
+//Change back to private after
+  public final TalonFX angleMotor;
   private final PositionVoltage anglePosition = new PositionVoltage(0);
 
   TalonFXConfiguration angleMotorConfig = new TalonFXConfiguration();
   
   private final CANcoder canCoder;
-  private final double canCoderOffsetDegrees;
+  private final double canCoderOffsetRotations;
   private final CANcoderConfigurator canConfig;
 
   // Constructor
@@ -61,7 +61,7 @@ public class SwerveModule {
     angleMotor = new TalonFX(constants.angleMotorID);
 
     canCoder = new CANcoder(constants.canCoderID);
-    canCoderOffsetDegrees = constants.canCoderOffsetDegrees;
+    canCoderOffsetRotations = constants.canCoderOffsetRotations;
     canConfig = canCoder.getConfigurator();
 
     configureDevices();
@@ -87,11 +87,8 @@ public class SwerveModule {
 
     angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
 
-    SmartDashboard.putNumber("Mod " + moduleNumber + " AnglePosition", anglePosition.Position);
-    //SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians1", angleMotor.getPosition().getValueAsDouble() * Constants.kSwerve.ANGLE_ROTATIONS_TO_RADIANS);
-    //SmartDashboard.putNumber("Mod " + moduleNumber + " angleMotorRadians2", angleMotor.getPosition().getValueAsDouble());
-    SmartDashboard.putNumber("Mod " + moduleNumber + " cancoder Rotations", canCoder.getAbsolutePosition().getValueAsDouble());
-    SmartDashboard.putNumber("Mod" + moduleNumber + " calculated angle rotations", state.angle.getRotations());
+  
+    
   }
 
   public SwerveModuleState getState() {
@@ -121,7 +118,7 @@ public class SwerveModule {
   private void configureDevices() {
     // CanCoder configuration.
     CANcoderConfiguration canCoderConfiguration = new CANcoderConfiguration();
-    canCoderConfiguration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+    canCoderConfiguration.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
     canCoderConfiguration.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
     
     canConfig.apply(canCoderConfiguration);
@@ -164,7 +161,7 @@ public class SwerveModule {
     angleMotorConfig.CurrentLimits.SupplyCurrentThreshold = Constants.kSwerve.ANGLE_CURRENT_THRESHOLD;
     angleMotorConfig.CurrentLimits.SupplyTimeThreshold = 0.1;
     angleMotorConfig.ClosedLoopGeneral.ContinuousWrap = true;
-    angleMotorConfig.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
+    //angleMotorConfig.Feedback.FeedbackRemoteSensorID = canCoder.getDeviceID();
   
     angleMotor.setInverted(Constants.kSwerve.ANGLE_MOTOR_INVERSION);
     angleMotor.setNeutralMode(Constants.kSwerve.ANGLE_IDLE_MODE);
@@ -179,6 +176,6 @@ public class SwerveModule {
 
     angleMotor.getConfigurator().apply(angleMotorConfig);
     
-    //angleMotor.setPosition(canCoder.getAbsolutePosition().getValueAsDouble() - (canCoderOffsetDegrees / 360)); // added ".getValue..."
+    angleMotor.setPosition((-canCoder.getAbsolutePosition().getValueAsDouble() + canCoderOffsetRotations)); // added ".getValue..."
   }
 }

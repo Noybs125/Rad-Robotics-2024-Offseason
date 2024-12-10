@@ -72,6 +72,7 @@ public class SwerveModule {
     // E.G. rotating from 10 to 270 degrees CW vs CCW.
     // System.out.println("Angle: " + state.angle.getRadians() + "Mod #: " + moduleNumber);
 
+   
     state = SwerveModuleState.optimize(state, getState().angle);
 
 
@@ -87,7 +88,7 @@ public class SwerveModule {
 
     angleMotor.setControl(anglePosition.withPosition(state.angle.getRotations()));
 
-  
+    SmartDashboard.putNumber("CalcVel " + moduleNumber , state.speedMetersPerSecond);
     
   }
 
@@ -124,6 +125,8 @@ public class SwerveModule {
     canConfig.apply(canCoderConfiguration);
   
     // Drive motor configuration.
+
+    
 
     driveMotorConfig.OpenLoopRamps.DutyCycleOpenLoopRampPeriod = Constants.kSwerve.OPEN_LOOP_RAMP;
     driveMotorConfig.ClosedLoopRamps.DutyCycleClosedLoopRampPeriod = Constants.kSwerve.CLOSED_LOOP_RAMP;

@@ -27,6 +27,8 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Constants {
   public static class vision {
     public static final Transform3d cameraToRobotCenter = new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0));
+    public static final Transform3d cameraToRobotCenter1 = new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0));
+    public static final Transform3d cameraToRobotCenter2 = new Transform3d(0, 0, 0, new Rotation3d(0, 0, 0));
     public static final Translation2d cameraToWrist = new Translation2d();
     public static final double cameraHeight = Units.inchesToMeters(0);
 

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.Nat;
@@ -86,7 +87,9 @@ public class Constants {
 
     /** Current limiting. */
     public static final int DRIVE_CURRENT_LIMIT = 40;
+    public static final int DRIVE_CURRENT_THRESHOLD = 60;
     public static final int ANGLE_CURRENT_LIMIT = 40;
+    public static final int ANGLE_CURRENT_THRESHOLD = 40;
 
     /** Drive motor PID values. */
     public static final double DRIVE_KP = 0.1;
@@ -115,40 +118,44 @@ public class Constants {
     public static final boolean CANCODER_INVERSION = false;
 
     /** Idle modes. */
-    public static final IdleMode DRIVE_IDLE_MODE = IdleMode.kBrake;
-    public static final IdleMode ANGLE_IDLE_MODE = IdleMode.kCoast;
-
+    public static final NeutralModeValue DRIVE_IDLE_MODE = NeutralModeValue.Brake;
+    public static final NeutralModeValue ANGLE_IDLE_MODE = NeutralModeValue.Coast;
     /** 
      * Module specific constants.
      * CanCoder offset is in DEGREES, not radians like the rest of the repo.
      * This is to make offset slightly more accurate and easier to measure.
      */
-    public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FL -x +y
+    public static final SwerveModuleConstants MOD_0_Constants = new SwerveModuleConstants( // FR +x +y
+      12,
       3,
+      0,
+      0.032,
+      true
+    );
+    
+    public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FL -x +y
+      9,
+      10,
+      3,
+      -0.371,
+      true
+    );
+
+    
+     public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BR +x -y
+      11,
       4,
-      2,
-      91.40
-    );
-
-    public static final SwerveModuleConstants MOD_1_Constants = new SwerveModuleConstants( // FR +x +y
-      5,
-      6,
-      3,
-      128.49
-    );
-
-    public static final SwerveModuleConstants MOD_2_Constants = new SwerveModuleConstants( // BL -x -y
       1,
-      2,
-      1,
-      134.4
+      -0.392, 
+      true
     );
 
-    public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BR +x -y
+    public static final SwerveModuleConstants MOD_3_Constants = new SwerveModuleConstants( // BL -x -y
       7,
-      8,
-      4,
-      75.49
+      6,
+      2,
+      -0.261,
+      true
     );
   }
 

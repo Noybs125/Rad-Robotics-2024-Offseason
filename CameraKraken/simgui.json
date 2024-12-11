@@ -3,6 +3,7 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Odometry/field odometry": "Field2d",
+      "/SmartDashboard/SendableChooser[0]": "String Chooser",
       "/SmartDashboard/field odometry": "Field2d"
     },
     "windows": {

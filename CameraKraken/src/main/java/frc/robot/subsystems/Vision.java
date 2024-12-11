@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase{
     // we on longer have a limelight on the robot, however we may one day need to put it back on again. Therefore, I have left this code inside of the program, although it may make it less readable, it could be useful one day. Thank you for taking the time to read this wonderful message and I hope you have a great day :D
     //private PhotonCamera camera1 = new PhotonCamera("photonvision1");
     private PhotonCamera camera2 = new PhotonCamera("OV9281_1");
-    private PhotonCamera camera3 = new PhotonCamera("OV9281_3");
+    private PhotonCamera camera3 = new PhotonCamera("OV9281_2");
 
 
 

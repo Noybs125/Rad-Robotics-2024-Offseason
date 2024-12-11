@@ -1,19 +1,24 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.auto.AutoBuilderException;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+
+//import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,20 +29,21 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
   public final Joystick leftJoy;
   public final Joystick rightJoy;
-  public final JoystickButton rightJoyButtonTrig;
+
   public final XboxController xbox;
   public final CommandXboxController commXbox;
-  public final AHRS gyro = new AHRS();
-  public PathPlannerAuto auto1;
-  public final Swerve swerve;
-  public final Vision vision;
-  private final SendableChooser<Command> autoChooser;
 
+
+  public final Swerve swerve;
+  public final AHRS gyro = new AHRS();
+  public final Vision vision;
+
+  private final SendableChooser<Command> autoChooser;
 
   public RobotContainer() {
     leftJoy = new Joystick(Constants.kControls.LEFT_JOY_ID);
     rightJoy = new Joystick(Constants.kControls.RIGHT_JOY_ID);
-    rightJoyButtonTrig = new JoystickButton(rightJoy, 1);
+
     xbox = new XboxController(2);
     commXbox = new CommandXboxController(2);
 
@@ -47,12 +53,20 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
 
+    SmartDashboard.putData(autoChooser);
+
+
+    
+
     // Configure button bindings
     configureButtonBindings();
   }
   
   public Command getAutonomousCommand() {
+
     return autoChooser.getSelected();
+    
+ 
   }
 
   /**
@@ -70,6 +84,6 @@ public class RobotContainer {
       false
       ));
 
-    rightJoyButtonTrig.onTrue(swerve.zeroGyroCommand());
+    commXbox.y().onTrue(swerve.zeroGyroCommand());
   }
 }

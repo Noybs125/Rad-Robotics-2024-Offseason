@@ -24,14 +24,14 @@ import frc.robot.Constants;
 import frc.robot.subsystems.Vision;
 import edu.wpi.first.math.Matrix;
 
-public class Camera {
+public class Camera extends PhotonCamera{
+    private Transform3d cameraToRobotCenter;
     private Vision vision;
-    private PhotonCamera camera;
     private PhotonPoseEstimator photonPoseEstimator;
     private PhotonPipelineResult latestResult;
     private PhotonTrackedTarget bestTarget;
     private Transform3d bestCameraToTarget;
-    private EstimatedRobotPose estRobotPose;
+    public EstimatedRobotPose estRobotPose;
     public int bestTargetId;
     private AprilTagFieldLayout apriltagMap;
     private Pose2d newPose = new Pose2d();
@@ -45,16 +45,15 @@ public class Camera {
 
     AHRS gyro;
 
-   
-    public Camera(PhotonCamera camera, Vision vision, EstimatedRobotPose estRobotPose) {
-        this.camera = camera;
+    public Camera(PhotonCamera camera, Transform3d cameraToRobotCenter, EstimatedRobotPose estRobotPose, Vision vision) {
+        super(camera.getName());
+        this.cameraToRobotCenter = cameraToRobotCenter;
         this.vision = vision;
         this.estRobotPose = estRobotPose;
-        this.photonPoseEstimator = new PhotonPoseEstimator(apriltagMap, PoseStrategy.AVERAGE_BEST_TARGETS, camera, Constants.vision.cameraToRobotCenter);
-
+        this.photonPoseEstimator = new PhotonPoseEstimator(apriltagMap, PoseStrategy.AVERAGE_BEST_TARGETS, camera, cameraToRobotCenter);
     }
     public void periodic(){
-        latestResult = camera.getLatestResult();
+        latestResult = super.getLatestResult();
         
         if(latestResult.hasTargets()){
             bestTarget = latestResult.getBestTarget();
@@ -63,25 +62,22 @@ public class Camera {
         }
         Optional<EstimatedRobotPose> estPose = getEstimatedGlobalPose(vision.robotPose);
         if(estPose.isPresent()){
-            if(photonPoseEstimator.getRobotToCameraTransform() != Constants.vision.cameraToRobotCenter){
-                photonPoseEstimator.setRobotToCameraTransform(Constants.vision.cameraToRobotCenter);
+            if(photonPoseEstimator.getRobotToCameraTransform() != cameraToRobotCenter){
+                photonPoseEstimator.setRobotToCameraTransform(cameraToRobotCenter);
             }
             estRobotPose = estPose.get();
         }
     }
 
     public boolean updatePose(){
-        if(camera.getLatestResult().hasTargets()){
-            return true;
-        }
-        return false;
+        return apriltagMap.getTagPose(bestTargetId).isPresent();
     }
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
         return photonPoseEstimator.update();
     }
     public Pose2d getRobotPose(){
-        newPose = estRobotPose.estimatedPose.transformBy(Constants.vision.cameraToRobotCenter).toPose2d();
+        newPose = estRobotPose.estimatedPose.transformBy(cameraToRobotCenter).toPose2d();
         return newPose;
     }
     public Matrix<N3, N1> getPoseAmbiguity(){
@@ -101,7 +97,16 @@ public class Camera {
             SmartDashboard.putNumber(camera.getName(), confidenceMultiplier);
             return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
         }
-        return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(0);
+        double poseAmbiguityFactor = estRobotPose.targetsUsed.size() != 1
+            ? 1
+            : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);
+        double confidenceMultiplier = Math.max(1,(Math.max(1, Math.max(0, smallestDistance - Constants.vision.NOISY_DISTANCE_METERS) * Constants.vision.DISTANCE_WEIGHT) * poseAmbiguityFactor) / (1 + ((estRobotPose.targetsUsed.size() - 1) * Constants.vision.TAG_PRESENCE_WEIGHT)));
+        SmartDashboard.putNumber(super.getName(), confidenceMultiplier);
+        return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
+    }
+
+    public Transform3d getCameraToRobot(){
+        return cameraToRobotCenter;
     }
 }
 

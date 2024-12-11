@@ -19,6 +19,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.Camera;
 import frc.robot.utils.SwerveModule;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -182,6 +183,9 @@ public class Swerve extends SubsystemBase {
   @Override 
   public void periodic() {
     swerveOdometry.update(getYaw(), getPositions());
+    for(Camera camera : vision.cameraList){
+      
+    }
     if(vision.orangepi1.updatePose()){
       swerveOdometry.addVisionMeasurement(vision.orangepi1.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi1.getPoseAmbiguity());
     }

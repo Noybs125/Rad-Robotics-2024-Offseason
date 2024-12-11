@@ -83,20 +83,14 @@ public class Camera extends PhotonCamera{
     public Matrix<N3, N1> getPoseAmbiguity(){
         double smallestDistance = Double.POSITIVE_INFINITY;
             if(estRobotPose != null){
-            for (var target : estRobotPose.targetsUsed) {
-                var t3d = target.getBestCameraToTarget();
-                var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
-                if (distance < smallestDistance) {
-                smallestDistance = distance;
+                for (var target : estRobotPose.targetsUsed) {
+                    var t3d = target.getBestCameraToTarget();
+                    var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+                    if (distance < smallestDistance) {
+                        smallestDistance = distance;
+                    }
                 }
             }
-            double poseAmbiguityFactor = estRobotPose.targetsUsed.size() != 1
-                ? 1
-                : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);
-            double confidenceMultiplier = Math.max(1,(Math.max(1, Math.max(0, smallestDistance - Constants.vision.NOISY_DISTANCE_METERS) * Constants.vision.DISTANCE_WEIGHT) * poseAmbiguityFactor) / (1 + ((estRobotPose.targetsUsed.size() - 1) * Constants.vision.TAG_PRESENCE_WEIGHT)));
-            SmartDashboard.putNumber(camera.getName(), confidenceMultiplier);
-            return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
-        }
         double poseAmbiguityFactor = estRobotPose.targetsUsed.size() != 1
             ? 1
             : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);

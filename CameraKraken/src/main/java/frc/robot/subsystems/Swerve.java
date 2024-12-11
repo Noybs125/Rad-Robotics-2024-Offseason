@@ -19,10 +19,12 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.utils.Camera;
 import frc.robot.utils.SwerveModule;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.ComplexWidget;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
@@ -182,15 +184,13 @@ public class Swerve extends SubsystemBase {
   @Override 
   public void periodic() {
     swerveOdometry.update(getYaw(), getPositions());
-    if(vision.orangepi1.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.orangepi1.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi1.getPoseAmbiguity());
+
+    for(Camera camera : vision.cameraList){
+      if(camera.updatePose()){
+        swerveOdometry.addVisionMeasurement(camera.getRobotPose(), Timer.getFPGATimestamp(), camera.getPoseAmbiguity());
+      }
     }
-    //if(vision.limelight.updatePose()){
-    //  swerveOdometry.addVisionMeasurement(vision.limelight.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.limelight.getPoseAmbiguity());
-    //}
-    if(vision.orangepi2.updatePose()){
-      swerveOdometry.addVisionMeasurement(vision.orangepi2.getRobotPose(), edu.wpi.first.wpilibj.Timer.getFPGATimestamp(), vision.orangepi2.getPoseAmbiguity());
-    }
+    
     for(SwerveModule mod : modules){
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Cancoder", mod.getCanCoderDegrees().getDegrees());
       SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Integrated", mod.getPosition().angle.getDegrees());

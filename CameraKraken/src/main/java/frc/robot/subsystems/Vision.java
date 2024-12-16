@@ -20,9 +20,6 @@ public class Vision extends SubsystemBase{
     private final AHRS gyro;
     public Pose2d robotPose = new Pose2d();
     public Pose3d estPose3d = new Pose3d();
-    public EstimatedRobotPose estRobotPose1 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
-    public EstimatedRobotPose estRobotPose2 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
-    public EstimatedRobotPose estRobotPose3 = new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS);
 
     // TODO: change variable names on actual robot
     /*public final Camera limelight = new Camera(
@@ -40,14 +37,13 @@ public class Vision extends SubsystemBase{
     public final Camera orangepi2 = new Camera(
         new PhotonCamera("OV9281_2"), 
         Constants.vision.cameraToRobotCenter3, 
-        new EstimatedRobotPose(estPose3d, 0.0, null, 
-        PoseStrategy.AVERAGE_BEST_TARGETS), 
+        new EstimatedRobotPose(estPose3d, 0.0, null, PoseStrategy.AVERAGE_BEST_TARGETS), 
         this
         );
 
     public Camera[] cameraList = new Camera[] {
         orangepi1,
-        orangepi2
+        orangepi2,
     };
 
     public Vision(AHRS gyro){

@@ -43,15 +43,16 @@ public class Camera extends PhotonCamera{
         }
     }
 
-    AHRS gyro;
+    private AHRS gyro;
 
     public Camera(PhotonCamera camera, Transform3d cameraToRobotCenter, EstimatedRobotPose estRobotPose, Vision vision) {
         super(camera.getName());
         this.cameraToRobotCenter = cameraToRobotCenter;
         this.vision = vision;
         this.estRobotPose = estRobotPose;
-        this.photonPoseEstimator = new PhotonPoseEstimator(apriltagMap, PoseStrategy.AVERAGE_BEST_TARGETS, camera, cameraToRobotCenter);
+        photonPoseEstimator = new PhotonPoseEstimator(apriltagMap, PoseStrategy.AVERAGE_BEST_TARGETS, camera, cameraToRobotCenter);
     }
+    
     public void periodic(){
         latestResult = super.getLatestResult();
         
@@ -70,7 +71,7 @@ public class Camera extends PhotonCamera{
     }
 
     public boolean updatePose(){
-        return apriltagMap.getTagPose(bestTargetId).isPresent();
+        return super.getLatestResult().hasTargets();
     }
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
@@ -82,19 +83,22 @@ public class Camera extends PhotonCamera{
     }
     public Matrix<N3, N1> getPoseAmbiguity(){
         double smallestDistance = Double.POSITIVE_INFINITY;
-            if(estRobotPose != null){
-                for (var target : estRobotPose.targetsUsed) {
-                    var t3d = target.getBestCameraToTarget();
-                    var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
-                    if (distance < smallestDistance) {
-                        smallestDistance = distance;
-                    }
+        double confidenceMultiplier = 0;
+        if(estRobotPose != null){
+            for (var target : estRobotPose.targetsUsed) {
+                var t3d = target.getBestCameraToTarget();
+                var distance = Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+                if (distance < smallestDistance) {
+                    smallestDistance = distance;
                 }
             }
-        double poseAmbiguityFactor = estRobotPose.targetsUsed.size() != 1
-            ? 1
-            : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);
-        double confidenceMultiplier = Math.max(1,(Math.max(1, Math.max(0, smallestDistance - Constants.vision.NOISY_DISTANCE_METERS) * Constants.vision.DISTANCE_WEIGHT) * poseAmbiguityFactor) / (1 + ((estRobotPose.targetsUsed.size() - 1) * Constants.vision.TAG_PRESENCE_WEIGHT)));
+            double poseAmbiguityFactor = estRobotPose.targetsUsed.size() != 1
+                ? 1
+                : Math.max(1, estRobotPose.targetsUsed.get(0).getPoseAmbiguity() + Constants.vision.POSE_AMBIGUITY_SHIFTER * Constants.vision.POSE_AMBIGUITY_MULTIPLIER);
+            confidenceMultiplier = Math.max(1,
+                (Math.max(1, Math.max(0, smallestDistance - Constants.vision.NOISY_DISTANCE_METERS) * Constants.vision.DISTANCE_WEIGHT) * poseAmbiguityFactor) 
+                / (1 + ((estRobotPose.targetsUsed.size() - 1) * Constants.vision.TAG_PRESENCE_WEIGHT)));
+        }
         SmartDashboard.putNumber(super.getName(), confidenceMultiplier);
         return Constants.vision.VISION_MEASUREMENT_STANDARD_DEVIATIONS.times(confidenceMultiplier);
     }

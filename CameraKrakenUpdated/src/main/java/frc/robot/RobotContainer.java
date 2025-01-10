@@ -1,6 +1,10 @@
 package frc.robot;
 
 import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.auto.AutoBuilderException;
@@ -35,7 +39,7 @@ public class RobotContainer {
 
 
   public final Swerve swerve;
-  public final AHRS gyro = new AHRS();
+  public final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   public final Vision vision;
 
   private final SendableChooser<Command> autoChooser;
